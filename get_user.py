@@ -11,6 +11,7 @@ client_id = os.getenv('CLIENT_ID')
 client_secret = os.getenv('CLIENT_SECRET')
 grant_type = 'client_credentials'
 access_token = os.getenv('ACCESS_TOKEN') 
+
 parser = argparse.ArgumentParser(prog='Twitch API CLI (User only)', 
         description='provide a username and you will get data about that twitch user')
 parser.add_argument('username')
