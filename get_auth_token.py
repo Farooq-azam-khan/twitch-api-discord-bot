@@ -1,6 +1,7 @@
 import requests as r
 from dotenv import load_dotenv
 import os
+from pprint import pprint 
 
 load_dotenv()
 
@@ -19,4 +20,4 @@ def get_access_token():
     return auth_key
 
 if __name__ == '__main__': 
-    print(get_access_token().json())
+    pprint(get_access_token().json())
