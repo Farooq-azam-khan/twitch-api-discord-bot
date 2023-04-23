@@ -1,6 +1,7 @@
 import requests as r
 from dotenv import load_dotenv
 import os
+import argparse 
 
 load_dotenv()
 
@@ -10,16 +11,32 @@ grant_type = 'client_credentials'
 
 get_oauth_token_url: str = 'https://id.twitch.tv/oauth2/token'
 client_req_params = {'client_id': client_id, 'client_secret': client_secret, 'grant_type': grant_type}
-
-def get_access_token():
-    auth_key = r.post(get_oauth_token_url, params=client_req_params)
-    return auth_key
-
 access_token = os.getenv('ACCESS_TOKEN') 
-top_game_headers = {'Authorization': f'Bearer {access_token}', 'Client-Id': client_id }
-top_games_res = r.get('https://api.twitch.tv/helix/games/top',
-                      headers=top_game_headers)
 
+parser = argparse.ArgumentParser(prog='Twitch API CLI (Games only)', 
+        description='')
+parser.add_argument('-n', '--next-games')
+
+
+top_game_headers = {'Authorization': f'Bearer {access_token}', 'Client-Id': client_id }
 if __name__ == '__main__':
-    for game in top_games_res.json()['data']:
-        print(f'name={game["name"]}')
+    args = parser.parse_args()
+    next_games = args.next_games
+    params = {'first': 10} 
+    
+    if next_games: 
+        print('getting after', next_games)
+        params['after'] = next_games
+    top_games_res = r.get('https://api.twitch.tv/helix/games/top',
+                        params=params, 
+                        headers=top_game_headers
+                ).json()
+
+
+    for game in top_games_res['data']:
+        name = game['name'] 
+        igdb_id = game['igdb_id']
+        print(f'{igdb_id=} {name=}')
+    print()
+    next_page = top_games_res['pagination']['cursor']
+    print(f'if you want the next 10 run:\n"python3 get_games.py --next-games=\"{next_page}\""')
